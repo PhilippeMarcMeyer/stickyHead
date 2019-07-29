@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <title>tableScroller</title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	
+    <!-- external css -->
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,500">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link rel="stylesheet" href="./scrollerFactory.css">
+	
+    <!-- internal css -->
+	<style>
+	
+	 body{
+		font-family: "Roboto,Helvetica Neue",Helvetica,Arial,sans-serif; 
+	 }
+	 
+	 #container{
+		 margin-top: 20px;
+		 margin-left:50px;
+		 position:relative;
+	 }
+
+	#menu{
+		 padding-top: 20px;
+		 padding-left:20px;
+	 }
+	 
+	h5 {
+		color: #2e44b9;
+		font-weight: bold;
+		font-size: 18px;;
+	}
+	
+	/* ---------- */
+
+a.btn-back:hover {
+	background-image: linear-gradient(to bottom,#ccc 0,#ddd 100%);
+}
+
+a.btn-back {
+	font-family: Tahoma, Calibri, Arial, sans-serif;
+	color : grey;
+	border-radius: 4px;
+	text-decoration: none;
+	border: 1px solid #ddd;
+	padding: 4px 8px 4px 8px;
+	margin:4px;
+	background-image: linear-gradient(to bottom,#fff 0,#eee 100%);
+}
+
+
+
+	</style>
+  </head>
+  <body>
+    <div id="menu">
+ 		<a class="btn-back" href="https://philippemarcmeyer.github.io/#jquery">Blog</a>
+		<a class="btn-back" href="https://github.com/PhilippeMarcMeyer/stickyHead">Repo</a>
+	</div>	
+	
+
+<div id="container" style="width:70%;">
+<br/><br/>
+    <h5>A js factory to show a sticky header table</h5>
+	<br/><br/>
+	<p>Data from http://www.filltext.com/</p>
+	<br/><br/>
+	<table id="scrolling-table" class="table table-striped table-bordered table-responsive-md">
+	<thead id="scrolling-table-head">
+	<tr>
+		<th data-prop="fname">First name</th>
+		<th data-prop="lname">Last name</th>
+		<th data-prop="company">Company</th>
+		<th data-prop="city">City</th>
+		<th data-prop="zip">Zip</th>
+		<th data-prop="country">Country</th>
+		<th data-prop="phone">Phone</th>
+		<th data-prop="active">Active</th>
+	</tr>
+	</thead>
+	<tbody></tbody>
+	</table>
+	
+
+</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+	  <script src="./filltext.js"></script>  
+		<script src="./scrollerFactory.js"></script>
+<script> 
+		let shownHeaders = [];
+		let $headers = $("#scrolling-table").find("thead th");
+			$headers.each(function(){
+				let prop = $(this).attr("data-prop");
+				if (typeof prop !== typeof undefined && prop !== false) {
+					shownHeaders.push(prop);
+				}
+			});
+			
+		let html = "";
+		
+		filltextMockData.forEach(function(x){
+			html+= "<tr>";
+			shownHeaders.forEach(function(y){
+				let value="";
+				if(x[y] != undefined){
+					let type = jQuery.type(x[y]);
+					if(type=="boolean"){
+						value = x[y] ? "X":"";
+					}else if(type=="string"){
+						value = x[y];
+					}else if(type=="number"){
+						value = x[y];
+					}
+				}
+				html+= "<td>"+value+"</td>";
+			});
+			html+= "</tr>";
+			$("#scrolling-table").find("tbody").html(html);
+		});
+
+ 
+let mainScroller = new scrollerFactory("scrolling-table-head","scrolling-table");
+
+window.onscroll = function () { mainScroller.managerTableScroll() };
+
+$(window).resize(function() {
+	mainScroller.managerTableScroll() 
+});
+	 </script>  
+</html>
+
