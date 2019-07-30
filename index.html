@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <title>tableScroller</title>
+    <title>sticky head</title>
 
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -93,14 +93,16 @@ a.btn-back {
 </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
 	  <script src="./filltext.js"></script>  
 		<script src="./scrollerFactory.js"></script>
 <script> 
+			window.scrollTo(0, 0);
+
 		let shownHeaders = [];
-		let $headers = $("#scrolling-table").find("thead th");
-			$headers.each(function(){
-				let prop = $(this).attr("data-prop");
+		let $headers = document.querySelectorAll("#scrolling-table thead th")
+			$headers.forEach(function(x){
+				let prop = x.getAttribute("data-prop");
 				if (typeof prop !== typeof undefined && prop !== false) {
 					shownHeaders.push(prop);
 				}
@@ -113,7 +115,7 @@ a.btn-back {
 			shownHeaders.forEach(function(y){
 				let value="";
 				if(x[y] != undefined){
-					let type = jQuery.type(x[y]);
+					let type =typeof x[y];
 					if(type=="boolean"){
 						value = x[y] ? "X":"";
 					}else if(type=="string"){
@@ -125,7 +127,7 @@ a.btn-back {
 				html+= "<td>"+value+"</td>";
 			});
 			html+= "</tr>";
-			$("#scrolling-table").find("tbody").html(html);
+			document.querySelectorAll("#scrolling-table tbody")[0].innerHTML = html;
 		});
 
  
@@ -133,9 +135,9 @@ let mainScroller = new scrollerFactory("scrolling-table-head","scrolling-table")
 
 window.onscroll = function () { mainScroller.managerTableScroll() };
 
-$(window).resize(function() {
-	mainScroller.managerTableScroll() 
-});
+window.onresize = function() {
+	mainScroller.managerTableScroll({"override":true}) 
+};
 	 </script>  
 </html>
 

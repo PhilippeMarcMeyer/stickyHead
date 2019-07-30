@@ -3,30 +3,37 @@
 
 
 function scrollerFactory(headerId, tableId, mainHeaderId) {
-    this.isSticky = false;
-    this.$header = $("#" + headerId);
-    this.$table = $("#" + tableId);
-    this.$headerTR = mainHeaderId ? $("#" + mainHeaderId) : $(this.$table).find("thead tr:first");
-    this.stickyFrontier = this.$header[0].getBoundingClientRect().top;
+	window.scrollTo(0, 0);
+    this.isSticky = null;
+    this.header = document.querySelectorAll("#" + headerId)[0];
+    this.table = document.querySelectorAll("#" + tableId)[0];
+    this.headerTR = mainHeaderId ? document.querySelectorAll("#" + mainHeaderId)[0] : this.table.querySelectorAll("thead tr:first-child");
+    this.stickyFrontier = this.header.getBoundingClientRect().top + window.scrollY;
 
-    this.managerTableScroll = function () {
+    this.managerTableScroll = function (instructions) {
+		let override = false;
+		if(instructions && instructions.override){
+			override = instructions.override;
+		}
         if (window.pageYOffset > this.stickyFrontier - 20) {
-                if (!this.isSticky) {
-                    this.$header.addClass("sticky");
-                    $(this.$table).find("tbody").css({ "display": "block" });
+                if (!this.isSticky || override) {
+                    this.header.classList.add("sticky");
+					this.table.querySelectorAll("tbody")[0].style.display = "block";
                     this.freezeHeaders(true);
                     this.isSticky = true;
                 }
-                let scrollH = -window.pageXOffset + ".px";
-                $(this.$header).css({ "margin-left": scrollH, "display": "block"});
+                let scrollH = -window.pageXOffset + "px";
+				this.header.style.marginLeft = scrollH;
+				this.header.style.display = "block";
+				this.header.style.width = "120%";
 
         } else {
-            if (this.isSticky) {
+           // if (this.header.classList.contains("sticky")) {
                 this.isSticky = false;
-                this.$header.removeClass("sticky");
-                $(this.$table).find("tbody").removeAttr("style");
-                $(this.$header).removeAttr("style");
-            }
+				this.header.classList.remove("sticky");
+                this.table.querySelectorAll("tbody")[0].removeAttribute("style");
+                this.header.removeAttribute("style");
+           // }
         }
     }
 
@@ -35,12 +42,12 @@ function scrollerFactory(headerId, tableId, mainHeaderId) {
 
         let arrWidthsForTHs = [];
         let arrWidthsForTDs = [];
-        let mainWidth = $(this.$table).parent().outerWidth() - 20;
-
-        let $dataTR = $(this.$table).find("tbody tr:first");
-        if ($dataTR.length == 1) {
-            $dataTR.find("td").each(function (i) {
-                    let w = $(this).outerWidth();
+        let mainWidth = this.table.parentNode.offsetWidth - 20;
+		let $dataTR = this.table.querySelectorAll("tbody tr:first-child")[0];
+       // let $dataTR = $(this.table).find("tbody tr:first");
+        if ($dataTR != undefined) {
+            $dataTR.querySelectorAll("td").forEach(function (x,i) {
+                    let w = x.offsetWidth;
                     arrWidthsForTHs.push(w);
                     count += w;
             });
@@ -49,17 +56,18 @@ function scrollerFactory(headerId, tableId, mainHeaderId) {
                 ratios.push(x / count);
             });
             let off = -1;
-            this.$headerTR.find("th").each(function (i) {
-                if (!$(this).hasClass("hide")) {
+			console.log(this.headerTR);
+            this.headerTR[0].querySelectorAll("th").forEach(function (x,i) {
+                if (!x.classList.contains("hide")) {
                     off++;
-                    $(this).css("width", parseInt((ratios[off] * mainWidth)) + ".px");
-                    $(this).css("min-width", arrWidthsForTHs[off]);
-                    let w = $(this).outerWidth();
+                    x.style.width =  parseInt((ratios[off] * mainWidth)) + ".px";
+                    x.style.minWidth  = arrWidthsForTHs[off];
+                    let w = x.offsetWidth;
                     arrWidthsForTDs.push(w);
                 }
             });
-            $dataTR.find("td").each(function (i) {
-                    $(this).css("min-width", arrWidthsForTDs[i] + ".px");
+            $dataTR.querySelectorAll("td").forEach(function (x,i) {
+                   x.style.minWidth = arrWidthsForTDs[i] + ".px";
             });
         }
     }

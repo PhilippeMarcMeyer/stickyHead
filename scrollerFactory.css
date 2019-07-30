@@ -5,3 +5,10 @@
   background-color:white;
   height: 36px;
 }
+
+
+
+#scrolling-table th{
+	white-space: nowrap;
+}
+
